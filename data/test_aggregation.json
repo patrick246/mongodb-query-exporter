@@ -1,0 +1,35 @@
+{
+	"type": "gauge",
+	"name": "stores",
+	"help": "Number of stores",
+	"labels": [
+		"country",
+		"postcode_area"
+	],
+	"database": "test",
+	"collection": "stores",
+	"pipeline": [{
+		"$project": {
+			"Country": 1,
+			"postcode_area": {
+				"$substr": ["$ZIP", 0, 2]
+			}
+		}
+	}, {
+		"$group": {
+			"_id": {
+				"country": "$Country",
+				"postcode_area": "$postcode_area"
+			},
+			"value": {
+				"$sum": 1
+			}
+		}
+	}, {
+		"$project": {
+			"labels": "$_id",
+			"_id": 0,
+			"value": "$value"
+		}
+	}]
+}
