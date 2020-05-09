@@ -4,3 +4,12 @@ services:
     image: mongo
     ports:
     - 127.0.0.1:27017:27017
+  exporter:
+    image: repo.p246.dev/patrick246/mongodb-query-exporter:1.1.0
+    command: >-
+      --mongodb-uri=mongodb://mongodb:27017
+      --config-path=/data/*.json
+    ports:
+    - 127.0.0.1:9736:9736
+    volumes:
+    - ./data:/data:ro
