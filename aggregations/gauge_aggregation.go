@@ -44,7 +44,7 @@ func (a *gaugeAggregation) Describe(ch chan<- *prometheus.Desc) {
 
 func (a *gaugeAggregation) Collect(ch chan<- prometheus.Metric) {
 	up := a.scrape()
-	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc("up", "MongoDB Query Exporter scrape result", nil, nil), prometheus.GaugeValue, up)
+	ch <- prometheus.MustNewConstMetric(prometheus.NewDesc("up", "MongoDB Query Exporter scrape result", nil, map[string]string{"aggregation": a.name}), prometheus.GaugeValue, up)
 	a.gauge.Collect(ch)
 }
 

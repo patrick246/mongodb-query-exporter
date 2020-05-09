@@ -1,8 +1,10 @@
 package exporter
 
 import (
+	"flag"
 	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/remeh/sizedwaitgroup"
 	"go.mongodb.org/mongo-driver/mongo"
 	"log"
 	"mongodb-query-exporter/aggregations"
@@ -25,6 +27,8 @@ type aggregationOperation struct {
 	operationType aggregationOperationType
 	result        chan prometheus.Collector
 }
+
+var maxConcurrentQueries = flag.Int("max-concurrent-queries", 0, "Maximal number of queries that are run concurrently against the database server. Zero disables limiting")
 
 func NewExporter(glob string, client *mongo.Client) (*Exporter, error) {
 	matches, err := filepath.Glob(glob)
@@ -81,9 +85,15 @@ func (e *Exporter) Describe(ch chan<- *prometheus.Desc) {
 }
 
 func (e *Exporter) Collect(ch chan<- prometheus.Metric) {
+	wg := sizedwaitgroup.New(*maxConcurrentQueries)
+	defer wg.Wait()
 	result := e.get()
 	for ag := range result {
-		ag.Collect(ch)
+		wg.Add()
+		go func(collector prometheus.Collector) {
+			defer wg.Done()
+			collector.Collect(ch)
+		}(ag)
 	}
 }
 
