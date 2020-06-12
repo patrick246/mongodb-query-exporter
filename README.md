@@ -37,5 +37,3 @@ You can generate nice dashboards in Grafana, based on your data in Prometheus. A
 * Pipeline validation
 * Testing this with real application databases
 * Support for other metric types than gauges
-* Dockerfile
-* Automated DockerHub build and publishing

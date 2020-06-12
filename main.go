@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"flag"
+	"github.com/namsral/flag"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.mongodb.org/mongo-driver/mongo"
